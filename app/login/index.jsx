@@ -2,8 +2,34 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import logoBg from "../../assets/images/bg.png";
 import Colors from '../../utils/colors';
+import { client } from '../../utils/auth.kinde';
+import services from "../../utils/storage.services";
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
+
+  // utils
+  const router = useRouter();
+
+
+  /**
+   * Function to handle user sign-in.
+   * Attempts to log the user in using client authentication.
+   * If successful, stores login status in device storage.
+   */
+  const handleSignIn = async () => {
+    const token = await client.login();
+    console.log("login token", token);
+    if (token) {
+      // User was authenticated
+      await services.storeData("login", "true");
+      router.replace('/');
+
+    }
+  };
+
+
+
   return (
     <View style={styles.mainView}>
 
@@ -14,7 +40,7 @@ export default function LoginScreen() {
 
         <Text style={styles.bottomViewSubHeadingText}>Balanced Money, Balanced Life. Know where your money is.</Text>
 
-        <TouchableOpacity style={styles.loginBtn}>
+        <TouchableOpacity style={styles.loginBtn} onPress={handleSignIn}>
           <Text style={styles.loginBtnText}>Login / Signup</Text>
         </TouchableOpacity>
         <Text style={styles.disclaimerText}>* By login/signup you agree to our terms and conditions</Text>
