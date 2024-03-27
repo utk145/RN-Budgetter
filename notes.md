@@ -8,3 +8,5 @@
         jekayis981@glaslack.com
         
         Pa$$w0rd    
+
+- [Supabse backend](https://supabase.com/docs/reference/javascript/initializing) 

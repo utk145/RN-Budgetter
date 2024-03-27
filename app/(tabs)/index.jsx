@@ -2,6 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 import services from "../../utils/storage.services";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
+import { supabase } from "../../utils/supabase.config";
+import { client } from "../../utils/auth.kinde";
+import Header from "../../components/Header";
+import Colors from "../../utils/colors";
 
 /**
  * Home Component
@@ -16,6 +20,7 @@ export default function Home() {
   // Effect Hook to check user login status on component mount
   useEffect(() => {
     checkUserLoggedIn();
+    getCategoryist();
   }, []);
 
 
@@ -32,9 +37,26 @@ export default function Home() {
     }
   }
 
+  /**
+   * Function to get the category list for the logged-in user.
+   * Fetches categories from the database using Supabase.
+  */
+  const getCategoryist = async () => {
+    const user = await client.getUserDetails();
+    // console.log(user);
+    const { data } =
+      await supabase
+        .from('Category')
+        .select('*')
+        .eq('created_by', user?.email);
+
+    console.log("data retrieved is", data);
+
+  }
+
   return (
-    <View>
-      <Text>HomeOs Page</Text>
+    <View style={styles.mainView}>
+      <Header />
     </View>
   );
 }
@@ -44,5 +66,10 @@ export default function Home() {
  * StyleSheet for styling the Home component.
  */
 const styles = StyleSheet.create({
-
+  mainView: {
+    marginTop: 25,
+    padding: 20,
+    backgroundColor: Colors.PRIMARY,
+    height: 100
+  }
 });
