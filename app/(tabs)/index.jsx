@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import services from "../utils/storage.services";
+import services from "../../utils/storage.services";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 

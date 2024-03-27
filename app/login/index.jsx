@@ -18,13 +18,17 @@ export default function LoginScreen() {
    * If successful, stores login status in device storage.
    */
   const handleSignIn = async () => {
-    const token = await client.login();
-    console.log("login token", token);
-    if (token) {
-      // User was authenticated
-      await services.storeData("login", "true");
-      router.replace('/');
+    try {
+      const token = await client.login();
+      console.log("login token", token);
+      if (token) {
+        // User was authenticated
+        await services.storeData("login", "true");
+        router.replace('/');
 
+      }
+    } catch (error) {
+      console.log("error during login", error);
     }
   };
 
