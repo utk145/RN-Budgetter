@@ -6,6 +6,8 @@ import { supabase } from "../../utils/supabase.config";
 import { client } from "../../utils/auth.kinde";
 import Header from "../../components/Header";
 import Colors from "../../utils/colors";
+import Pie from "../../components/Pie";
+import { AntDesign } from '@expo/vector-icons';
 
 /**
  * Home Component
@@ -55,8 +57,14 @@ export default function Home() {
   }
 
   return (
-    <View style={styles.mainView}>
-      <Header />
+    <View style={styles.screnView}>
+      <View style={styles.mainView}>
+        <Header />
+        <Pie />
+      </View>
+      <View style={styles.addIconView}>
+        <AntDesign name="pluscircle" size={50} color={Colors.PRIMARY} />
+      </View>
     </View>
   );
 }
@@ -67,9 +75,17 @@ export default function Home() {
  */
 const styles = StyleSheet.create({
   mainView: {
-    marginTop: 25,
     padding: 20,
     backgroundColor: Colors.PRIMARY,
-    height: 100
+    height: 140
+  },
+  screnView: {
+    marginTop: 25,
+    flex: 1,
+  },
+  addIconView: {
+    position: "absolute",
+    bottom: 35,
+    right: 20,
   }
 });

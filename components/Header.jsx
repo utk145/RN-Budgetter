@@ -52,8 +52,8 @@ export default function Header() {
 
             <View style={styles.contentView}>
                 <View>
-                    <Text style={{ color: Colors.WHITE, fontSize: 16 }}>Welcome, </Text>
-                    <Text style={{ color: Colors.WHITE, fontSize: 20, fontWeight: "bold" }}>{`${userDetails?.given_name} ${userDetails?.family_name}`}</Text>
+                    <Text style={{ color: Colors.WHITE, fontSize: 16, fontFamily: 'Outfit-Regular' }}>Welcome, </Text>
+                    <Text style={{ color: Colors.WHITE, fontSize: 20, fontFamily: "Outfit-Bold" }}>{`${userDetails?.given_name} ${userDetails?.family_name}`}</Text>
                 </View>
                 <TouchableOpacity onPress={() => router.push("prof")}>
                     <FontAwesome name="bell" size={30} color="red" />
