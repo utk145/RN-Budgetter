@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import services from "../../utils/storage.services";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { supabase } from "../../utils/supabase.config";
 import { client } from "../../utils/auth.kinde";
 import Header from "../../components/Header";
@@ -62,9 +62,9 @@ export default function Home() {
         <Header />
         <Pie />
       </View>
-      <View style={styles.addIconView}>
+      <Link href={"/AddNewCategory"} style={styles.addIconView}>
         <AntDesign name="pluscircle" size={50} color={Colors.PRIMARY} />
-      </View>
+      </Link>
     </View>
   );
 }
