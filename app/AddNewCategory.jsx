@@ -3,34 +3,86 @@
  * Represents the screen for adding a new category.
  */
 
-import { View, Text, StyleSheet, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
 import React, { useState } from 'react'
 import Colors from '../utils/colors'
 import ColorPicker from '../components/ColorPicker';
+import { MaterialIcons } from '@expo/vector-icons';
+import { supabase } from '../utils/supabase.config';
+import { client } from '../utils/auth.kinde';
 
 export default function AddNewCategory() {
 
-    const [selectedIcon, setSelectedIcon] = useState(''); // initial category
+    const [selectedIcon, setSelectedIcon] = useState('IC'); // initial category
     const [selectedColor, setSelectedColor] = useState(Colors.PRIMARY);
     // console.log("selectedColor is ", selectedColor);
+    // console.log("selectedIcon is ", selectedIcon);
+
+    const [categoryName, setCategoryName] = useState();
+    const [totalBudget, setTotalBudget] = useState();
+
+    
+    // Function to create a new category
+    const onClickCreateCategory = async () => {
+        const { data } = await supabase.from('Category').insert([{
+            name: categoryName,
+            assigned_budget: totalBudget,
+            icon: selectedIcon,
+            color: selectedColor,
+            created_by: (await client.getUserDetails())?.email
+        }]).select();
+
+        if (data) {
+            console.log("data is", data);
+            ToastAndroid.show("Category Created!", ToastAndroid.SHORT);
+        }
+    }
 
     return (
-        <View style={styles.mainView}>
+        <ScrollView style={styles.mainView}>
             <View style={styles.textView}>
                 <TextInput style={[styles.iconInput, { backgroundColor: selectedColor }]}
-                    value={selectedIcon}
                     maxLength={2}
                     placeholder='IC'
                     placeholderTextColor={Colors.WHITE}
-                    onChange={(e) => setSelectedIcon(e.target.value)}
-                />
+                    onChangeText={(value) => setSelectedIcon(value)}
+                >{selectedIcon}</TextInput>
             </View>
             <ColorPicker
                 selectedColor={selectedColor}
                 setSelectedColor={(color) => setSelectedColor(color)}
-            /> 
+            />
             {/* **Notes */}
-        </View>
+
+            <View style={styles.categoryAndInputView}>
+                <MaterialIcons name="local-offer" size={24} color={Colors.GRAY} />
+                <TextInput
+                    placeholder='Category Name'
+                    style={{ width: "100%", fontSize: 17 }}
+                    onChangeText={(val) => setCategoryName(val)}
+                />
+            </View>
+
+            <View style={styles.categoryAndInputView}>
+                <MaterialIcons name="currency-rupee" size={24} color={Colors.GRAY} />
+                <TextInput
+                    placeholder='Total Budget'
+                    keyboardType='numeric'
+
+                    style={{ width: "100%", fontSize: 17 }}
+                    onChangeText={(val) => setTotalBudget(val)}
+                />
+            </View>
+
+            <TouchableOpacity
+                style={styles.createButton}
+                disabled={!categoryName && !totalBudget}
+                onPress={() => onClickCreateCategory()}
+            >
+                <Text style={styles.buttonText}>Create</Text>
+            </TouchableOpacity>
+
+        </ScrollView>
     )
 }
 
@@ -51,6 +103,28 @@ const styles = StyleSheet.create({
     textView: {
         justifyContent: "center",
         alignItems: "center"
+    },
+    categoryAndInputView: {
+        marginTop: 20,
+        borderWidth: 1,
+        borderColor: Colors.GRAY,
+        borderRadius: 10,
+        flexDirection: 'row',
+        gap: 20,
+        padding: 14,
+        alignItems: 'center',
+        backgroundColor: Colors.WHITE,
+    },
+    createButton: {
+        marginTop: 30,
+        backgroundColor: Colors.PRIMARY,
+        padding: 15,
+        borderRadius: 10,
+    },
+    buttonText: {
+        color: Colors.WHITE,
+        fontSize: 20,
+        alignSelf: "center"
     }
 })
 
