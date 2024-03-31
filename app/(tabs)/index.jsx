@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import services from "../../utils/storage.services";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { supabase } from "../../utils/supabase.config";
 import { client } from "../../utils/auth.kinde";
@@ -8,12 +8,16 @@ import Header from "../../components/Header";
 import Colors from "../../utils/colors";
 import Pie from "../../components/Pie";
 import { AntDesign } from '@expo/vector-icons';
+import CategoriesList from "../../components/CategoriesList";
 
 /**
  * Home Component
  * Represents the main screen of the application.
  */
 export default function Home() {
+
+  const [categoryList, setCategoryList] = useState();
+  const [isloading, setIsLoading] = useState(false);
 
   // utils
   const router = useRouter();
@@ -44,24 +48,38 @@ export default function Home() {
    * Fetches categories from the database using Supabase.
   */
   const getCategoryist = async () => {
+    setIsLoading(true);
     const user = await client.getUserDetails();
     // console.log(user);
     const { data } =
       await supabase
         .from('Category')
-        .select('*')
+        .select('*,CategoryItem(*)')
         .eq('created_by', user?.email);
 
     console.log("data retrieved is", data);
-
+    setCategoryList(data);
+    data && setIsLoading(false);
   }
 
   return (
     <View style={styles.screnView}>
-      <View style={styles.mainView}>
-        <Header />
-        <Pie />
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            onRefresh={() => getCategoryist()}
+            refreshing={isloading}
+          />
+        }
+      >
+        <View style={styles.mainView}>
+          <Header />
+        </View>
+        <View style={styles.newView}>
+          <Pie />
+          <CategoriesList categoryList={categoryList} />
+        </View>
+      </ScrollView>
       <Link href={"/AddNewCategory"} style={styles.addIconView}>
         <AntDesign name="pluscircle" size={50} color={Colors.PRIMARY} />
       </Link>
@@ -87,5 +105,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 35,
     right: 20,
+  },
+  newView: {
+    padding: 20,
+    marginTop: -90
   }
 });
