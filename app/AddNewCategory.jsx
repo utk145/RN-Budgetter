@@ -10,8 +10,11 @@ import ColorPicker from '../components/ColorPicker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../utils/supabase.config';
 import { client } from '../utils/auth.kinde';
+import { useRouter } from 'expo-router';
 
 export default function AddNewCategory() {
+
+    const router = useRouter();
 
     const [selectedIcon, setSelectedIcon] = useState('IC'); // initial category
     const [selectedColor, setSelectedColor] = useState(Colors.PRIMARY);
@@ -21,7 +24,7 @@ export default function AddNewCategory() {
     const [categoryName, setCategoryName] = useState();
     const [totalBudget, setTotalBudget] = useState();
 
-    
+
     // Function to create a new category
     const onClickCreateCategory = async () => {
         const { data } = await supabase.from('Category').insert([{
@@ -33,6 +36,12 @@ export default function AddNewCategory() {
         }]).select();
 
         if (data) {
+            router.replace({
+                pathname: "/CategoryDetails",
+                params: {
+                    categoryId: data[0]?.id
+                }
+            })
             console.log("data is", data);
             ToastAndroid.show("Category Created!", ToastAndroid.SHORT);
         }
