@@ -1,18 +1,19 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import { supabase } from '../utils/supabase.config';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import CategoryInfo from '../components/CategoryDetails/CategoryInfo';
 import CategoryItemList from '../components/CategoryDetails/CategoryItemList';
+import { AntDesign } from '@expo/vector-icons';
 
 
 export default function CategoryDetails() {
 
     const { categoryId } = useLocalSearchParams();
     const [categoryData, setCategoryData] = useState();
-    
+
     useEffect(() => {
         console.log("categoryId is ", categoryId);
         categoryId && getCategoryDetails();
@@ -36,7 +37,17 @@ export default function CategoryDetails() {
             />
 
             <CategoryInfo categoryData={categoryData} />
-            <CategoryItemList categoryData={categoryData}/>
+            <CategoryItemList categoryData={categoryData} />
+
+            <Link href={{
+                pathname: "/AddNewCategoryItem",
+                params: {
+                    categoryId: categoryData?.id
+                }
+            }} style={styles.addIconView}>
+                <AntDesign name="pluscircle" size={50} color={categoryData?.color} />
+            </Link>
+
         </View>
     )
 }
@@ -44,6 +55,12 @@ export default function CategoryDetails() {
 const styles = StyleSheet.create({
     mainView: {
         padding: 20,
-        marginTop: 20
+        marginTop: 20,
+        flex: 1
+    },
+    addIconView: {
+        position: "absolute",
+        bottom: 35,
+        right: 20,
     },
 })
