@@ -19,7 +19,7 @@ export default function CategoryInfo({ categoryData }) {
     const [totalCost, setTotalCost] = useState();
     const [percentage, setPercentage] = useState(0);
 
-      // Function to calculate total cost and percentage completion
+    // Function to calculate total cost and percentage completion
     useEffect(() => {
         categoryData && calTotalPercentage();
     }, [categoryData, percentage])
@@ -77,7 +77,6 @@ export default function CategoryInfo({ categoryData }) {
 
             <View style={styles.progressBarContainer}>
                 <View style={[styles.progressBarSubContainer, { width: `${percentage}%` }]}>
-
                 </View>
             </View>
 
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     iconTextStyle: {
-        fontSize: 25,
+        fontSize: 30,
         padding: 18,
         borderRadius: 15
     },

@@ -5,6 +5,7 @@ import { supabase } from '../utils/supabase.config';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import CategoryInfo from '../components/CategoryDetails/CategoryInfo';
+import CategoryItemList from '../components/CategoryDetails/CategoryItemList';
 
 
 export default function CategoryDetails() {
@@ -35,6 +36,7 @@ export default function CategoryDetails() {
             />
 
             <CategoryInfo categoryData={categoryData} />
+            <CategoryItemList categoryData={categoryData}/>
         </View>
     )
 }
