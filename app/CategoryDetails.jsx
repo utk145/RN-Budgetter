@@ -56,7 +56,8 @@ const styles = StyleSheet.create({
     mainView: {
         padding: 20,
         marginTop: 20,
-        flex: 1
+        flex: 1,
+        backgroundColor: "#fff"
     },
     addIconView: {
         position: "absolute",

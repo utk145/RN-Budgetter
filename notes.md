@@ -10,3 +10,5 @@
         Pa$$w0rd    
 
 - [Supabse backend](https://supabase.com/docs/reference/javascript/initializing) 
+
+- Expo ImagePicker: https://docs.expo.dev/versions/latest/sdk/imagepicker/

@@ -32,7 +32,7 @@ export default function CategoryItemList({ categoryData }) {
           categoryData?.CategoryItem?.length > 0 ?
             categoryData?.CategoryItem?.map((item, index) => (
               <>
-                <View key={index + 1} style={styles.mainItemContainer}>
+                <View key={`${item.item_name}_${index}`} style={styles.mainItemContainer}>
 
                   <Image
                     source={{
@@ -55,7 +55,7 @@ export default function CategoryItemList({ categoryData }) {
 
                 {/*  This line of code conditionally renders a horizontal line separator between items in the list. The condition checks if the current index is not equal to the length of the `CategoryItem` array minus one, which means that the horizontal line should be rendered for all items except the last one.
             */}
-                {categoryData?.CategoryItem?.length - 1 != index && <View style={styles.horizontalLine}></View >}
+                {categoryData?.CategoryItem?.length - 1 != index && <View key={index + 1} style={styles.horizontalLine}></View >}
 
               </>
             ))

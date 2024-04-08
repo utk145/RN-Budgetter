@@ -1,10 +1,20 @@
-import { View, Text, StyleSheet, Image, ImageBackground, TextInput, ScrollView, TouchableOpacity } from "react-native";
+/**
+ * AddNewCategoryItem Component
+ * Represents the screen for adding a new item to a category.
+ * Allows users to add details such as item name, price, image, URL, and notes.
+ */
+
+import { View, Text, StyleSheet, Image, ImageBackground, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, ToastAndroid } from "react-native";
 import React, { useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import Colors from "../utils/colors";
 import { MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { supabase } from "../utils/supabase.config";
+import { decode } from 'base64-arraybuffer'
 
 
+// Placeholder image displayed before selecting an image
 const placeholderImage =
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCGPPu5x0HGfWucb9PBNFwXF8U7MwjYNJFFWcYsUlxcQ&s";
 
@@ -12,46 +22,144 @@ export default function AddNewCategoryItem() {
     const { categoryId } = useLocalSearchParams();
     // console.log("categoryId from AddNewCategory ", categoryId);
 
-    const [image, setImage] = useState(placeholderImage);
+
+    // State variables to store item details
+    const [imageBuffer, setBufferImage] = useState(placeholderImage);
+    const [previewImage, setPreviewImage] = useState(placeholderImage);
+    const [itemName, setItemName] = useState();
+    const [itemPrice, setItemPrice] = useState();
+    const [itemUrl, setItemUrl] = useState();
+    const [itemNote, setItemNote] = useState();
+
+
+    // Function to handle image selection from the device's gallery
+    const onClickImagePicker = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+            base64: true
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setBufferImage(result.assets[0].base64);
+            setPreviewImage(result.assets[0].uri);
+        }
+    };
+
+
+    // Function to save the item details to the database
+    const onClickSave = async () => {
+        try {
+            // https://supabase.com/docs/reference/javascript/storage-from-upload?example=upload-file-using-arraybuffer-from-base64-file-data
+
+            // 1. Uploading Image
+            const uniqueFileName = Date.now();
+
+            const { data, error } = await supabase
+                .storage
+                .from('images')
+                .upload(uniqueFileName + ".png", decode(imageBuffer), {
+                    contentType: 'image/png'
+                });
+
+            if (error)
+                console.log("Error during File upload..: ", error);
+            if (data) {
+                // console.log("File upload..", data);
+                // const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${data?.path}`; // Not this because sometimes it takes longer to fetach data.path resulting in undefines CategoryItem upload 
+
+                const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${uniqueFileName}.png`;
+                // console.log(fileImageUploadUrl);
+
+
+                const { data, error } = await supabase
+                    .from("CategoryItem")
+                    .insert([
+                        {
+                            item_name: itemName,
+                            price: itemPrice,
+                            note: itemNote,
+                            image: fileImageUploadUrl,
+                            category_id: categoryId,
+                            url: itemUrl,
+                        }
+                    ])
+                    .select()
+
+                console.log("data saved is ", data);
+                ToastAndroid.show("Category Item Created!", ToastAndroid.SHORT)
+                router.replace({
+                    pathname: "/CategoryDetails",
+                    params: {
+                        categoryId: categoryId
+                    }
+                })
+
+
+            }
+        } catch (error) {
+            console.log("Somthing unexpected went wrong.. ", error);
+        }
+
+
+    }
+
 
     return (
-        <ScrollView style={styles.mainView}>
-            <Image source={{ uri: image }} style={styles.image} />
-            <View style={styles.itemInputView}>
-                <MaterialIcons name="local-offer" size={24} color={Colors.GRAY} />
-                <TextInput
-                    placeholder="Item Name"
-                    style={styles.input}
-                />
-            </View>
-            <View style={styles.itemInputView}>
-                <MaterialIcons name="currency-rupee" size={24} color={Colors.GRAY} />
-                <TextInput
-                    placeholder="Item Price"
-                    style={styles.input}
-                />
-            </View>
-            <View style={styles.itemInputView}>
-                <MaterialIcons name="link" size={24} color={Colors.GRAY} />
-                <TextInput
-                    placeholder="Item URL / Buy link"
-                    style={styles.input}
-                />
-            </View>
-            <View style={styles.itemInputView}>
-                <MaterialIcons name="draw" size={24} color={Colors.GRAY} />
-                <TextInput
-                    placeholder="Add a note"
-                    style={styles.input}
-                    numberOfLines={3}
-                />
-            </View>
+        <KeyboardAvoidingView>
+            <ScrollView style={styles.mainView}>
+                <TouchableOpacity onPress={() => onClickImagePicker()}>
+                    <Image source={{ uri: previewImage }} style={styles.image} />
+                </TouchableOpacity>
+                <View style={styles.itemInputView}>
+                    <MaterialIcons name="local-offer" size={24} color={Colors.GRAY} />
+                    <TextInput
+                        placeholder="Item Name"
+                        style={styles.input}
+                        onChangeText={(value) => setItemName(value)}
+                    />
+                </View>
+                <View style={styles.itemInputView}>
+                    <MaterialIcons name="currency-rupee" size={24} color={Colors.GRAY} />
+                    <TextInput
+                        placeholder="Item Price"
+                        style={styles.input}
+                        keyboardType="numeric"
+                        onChangeText={(value) => setItemPrice(value)}
+                    />
+                </View>
+                <View style={styles.itemInputView}>
+                    <MaterialIcons name="link" size={24} color={Colors.GRAY} />
+                    <TextInput
+                        placeholder="Item URL / Buy link"
+                        style={styles.input}
+                        onChangeText={(value) => setItemUrl(value)}
+                    />
+                </View>
+                <View style={styles.itemInputView}>
+                    <MaterialIcons name="draw" size={24} color={Colors.GRAY} />
+                    <TextInput
+                        placeholder="Add a note"
+                        style={styles.input}
+                        numberOfLines={3}
+                        onChangeText={(value) => setItemNote(value)}
+                    />
+                </View>
 
-            <TouchableOpacity style={styles.createButton}>
-                <Text style={styles.buttonText}>Add</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.createButton}
+                    disabled={!itemName || !itemPrice}
+                    onPress={() => onClickSave()}
+                >
+                    <Text style={styles.buttonText}>Add</Text>
+                </TouchableOpacity>
 
-        </ScrollView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -78,7 +186,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.WHITE,
     },
     input: {
-        fontSize: 17
+        fontSize: 17,
+        width: "100%"
     },
     createButton: {
         marginTop: 20,

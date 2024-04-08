@@ -29,7 +29,22 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "../assets/fonts/Outfit-Regular.ttf",
+            "../assets/fonts/Outfit-Medium.ttf",
+            "../assets/fonts/Outfit-Bold.ttf"
+          ]
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to save them as item pic."
+        }
+      ]
     ]
   }
 }
