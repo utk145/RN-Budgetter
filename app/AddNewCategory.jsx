@@ -3,7 +3,7 @@
  * Represents the screen for adding a new category.
  */
 
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ToastAndroid } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ToastAndroid, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import Colors from '../utils/colors'
 import ColorPicker from '../components/ColorPicker';
@@ -23,10 +23,11 @@ export default function AddNewCategory() {
 
     const [categoryName, setCategoryName] = useState();
     const [totalBudget, setTotalBudget] = useState();
-
+    const [loader, setLoader] = useState(false);
 
     // Function to create a new category
     const onClickCreateCategory = async () => {
+        setLoader(true);
         const { data } = await supabase.from('Category').insert([{
             name: categoryName,
             assigned_budget: totalBudget,
@@ -45,6 +46,7 @@ export default function AddNewCategory() {
             console.log("data is", data);
             ToastAndroid.show("Category Created!", ToastAndroid.SHORT);
         }
+        setLoader(false);
     }
 
     return (
@@ -85,10 +87,12 @@ export default function AddNewCategory() {
 
             <TouchableOpacity
                 style={styles.createButton}
-                disabled={!categoryName && !totalBudget}
+                disabled={!categoryName && !totalBudget || loader}
                 onPress={() => onClickCreateCategory()}
             >
-                <Text style={styles.buttonText}>Create</Text>
+                {loader ? <ActivityIndicator color={Colors.WHITE} /> :
+                    <Text style={styles.buttonText}>Create</Text>
+                }
             </TouchableOpacity>
 
         </ScrollView>

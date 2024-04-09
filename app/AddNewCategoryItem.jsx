@@ -4,7 +4,7 @@
  * Allows users to add details such as item name, price, image, URL, and notes.
  */
 
-import { View, Text, StyleSheet, Image, ImageBackground, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, ToastAndroid } from "react-native";
+import { View, Text, StyleSheet, Image, ImageBackground, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, ToastAndroid, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import Colors from "../utils/colors";
@@ -30,6 +30,7 @@ export default function AddNewCategoryItem() {
     const [itemPrice, setItemPrice] = useState();
     const [itemUrl, setItemUrl] = useState();
     const [itemNote, setItemNote] = useState();
+    const [loader, setLoader] = useState(false);
 
 
     // Function to handle image selection from the device's gallery
@@ -55,17 +56,21 @@ export default function AddNewCategoryItem() {
     // Function to save the item details to the database
     const onClickSave = async () => {
         try {
+            setLoader(true);
             // https://supabase.com/docs/reference/javascript/storage-from-upload?example=upload-file-using-arraybuffer-from-base64-file-data
 
             // 1. Uploading Image
             const uniqueFileName = Date.now();
+            const fileExtension = previewImage.split('.').pop(); // Extract file extension from URI
 
-            const { data, error } = await supabase
-                .storage
-                .from('images')
-                .upload(uniqueFileName + ".png", decode(imageBuffer), {
-                    contentType: 'image/png'
-                });
+            const { data, error } = await supabase.storage.from('images').upload(
+                `${uniqueFileName}.${fileExtension}`,
+                decode(imageBuffer),
+                {
+                    contentType: `image/${fileExtension}` // Set content type dynamically based on file extension
+                }
+            );
+
 
             if (error)
                 console.log("Error during File upload..: ", error);
@@ -73,7 +78,7 @@ export default function AddNewCategoryItem() {
                 // console.log("File upload..", data);
                 // const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${data?.path}`; // Not this because sometimes it takes longer to fetach data.path resulting in undefines CategoryItem upload 
 
-                const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${uniqueFileName}.png`;
+                const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${uniqueFileName}.${fileExtension}`;
                 // console.log(fileImageUploadUrl);
 
 
@@ -92,6 +97,7 @@ export default function AddNewCategoryItem() {
                     .select()
 
                 console.log("data saved is ", data);
+                setLoader(false);
                 ToastAndroid.show("Category Item Created!", ToastAndroid.SHORT)
                 router.replace({
                     pathname: "/CategoryDetails",
@@ -152,10 +158,12 @@ export default function AddNewCategoryItem() {
                 </View>
 
                 <TouchableOpacity style={styles.createButton}
-                    disabled={!itemName || !itemPrice}
+                    disabled={!itemName || !itemPrice || loader}
                     onPress={() => onClickSave()}
                 >
-                    <Text style={styles.buttonText}>Add</Text>
+                    {loader ? <ActivityIndicator color={Colors.WHITE} /> :
+                        <Text style={styles.buttonText}>Add</Text>
+                    }
                 </TouchableOpacity>
 
             </ScrollView>
