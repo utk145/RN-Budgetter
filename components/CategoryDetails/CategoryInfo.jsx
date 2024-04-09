@@ -3,7 +3,7 @@
  * Component to display detailed information about a category, including its icon, name, number of items, total budget, and budget progress.
  */
 
-import { View, Text, StyleSheet, ToastAndroid, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ToastAndroid, TouchableOpacity, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '../../utils/colors';
@@ -33,22 +33,50 @@ export default function CategoryInfo({ categoryData }) {
         // console.log("totalCost is", total);
         setTotalCost(total);
         percent = (total / (categoryData?.assigned_budget)) * 100;
+        if (percent > 100) {
+            percent = 100;
+        }
         setPercentage(percent)
     }
 
     // handle category delete functionality
     const handleDelete = async () => {
         try {
-            const { data, error } = await supabase
-                .from('Category')
-                .delete()
-                .eq('id', categoryData.id)
-            if (error) {
-                throw error;
-            }
-            console.log('Category deleted successfully');
-            ToastAndroid.show(`${categoryData?.name} deleted!`, ToastAndroid.SHORT);
-            router.replace("/")
+            // Confirmation dialog for category deletion
+            Alert.alert(
+                "Are you sure?",
+                "Do you really want to delete this category?",
+                [
+                    {
+                        text: "Cancel",
+                        style: 'cancel'
+                    },
+                    {
+                        text: "Yes",
+                        style: "destructive",
+                        onPress: async () => {
+
+                            // Delete all items under the category
+                            const { data, error } = await supabase
+                                .from('CategoryItem')
+                                .delete()
+                                .eq('category_id', categoryData.id)
+
+                            // Delete the category itself
+                            await supabase
+                                .from("Category")
+                                .delete()
+                                .eq("id", categoryData.id)
+
+                            if (error) {
+                                throw error;
+                            }
+                            console.log('Category deleted successfully');
+                            ToastAndroid.show(`${categoryData?.name} deleted!`, ToastAndroid.SHORT);
+                            router.replace("/")
+                        }
+                    }
+                ])
         } catch (error) {
             console.error('Error deleting category:', error.message);
         }
