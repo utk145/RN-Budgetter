@@ -57,64 +57,63 @@ export default function AddNewCategoryItem() {
     const onClickSave = async () => {
         try {
             setLoader(true);
+
             // https://supabase.com/docs/reference/javascript/storage-from-upload?example=upload-file-using-arraybuffer-from-base64-file-data
 
-            // 1. Uploading Image
-            const uniqueFileName = Date.now();
-            const fileExtension = previewImage.split('.').pop(); // Extract file extension from URI
+            let fileImageUploadUrl = null;
 
-            const { data, error } = await supabase.storage.from('images').upload(
-                `${uniqueFileName}.${fileExtension}`,
-                decode(imageBuffer),
-                {
-                    contentType: `image/${fileExtension}` // Set content type dynamically based on file extension
-                }
-            );
+            // Check if an image is selected
+            if (previewImage !== placeholderImage) {
+                // 1. Uploading Image
+                const uniqueFileName = Date.now();
+                const fileExtension = previewImage.split('.').pop(); // Extract file extension from URI
 
-
-            if (error)
-                console.log("Error during File upload..: ", error);
-            if (data) {
-                // console.log("File upload..", data);
-                // const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${data?.path}`; // Not this because sometimes it takes longer to fetach data.path resulting in undefines CategoryItem upload 
-
-                const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${uniqueFileName}.${fileExtension}`;
-                // console.log(fileImageUploadUrl);
-
-
-                const { data, error } = await supabase
-                    .from("CategoryItem")
-                    .insert([
-                        {
-                            item_name: itemName,
-                            price: itemPrice,
-                            note: itemNote,
-                            image: fileImageUploadUrl,
-                            category_id: categoryId,
-                            url: itemUrl,
-                        }
-                    ])
-                    .select()
-
-                console.log("data saved is ", data);
-                setLoader(false);
-                ToastAndroid.show("Category Item Created!", ToastAndroid.SHORT)
-                router.replace({
-                    pathname: "/CategoryDetails",
-                    params: {
-                        categoryId: categoryId
+                const { data, error } = await supabase.storage.from('images').upload(
+                    `${uniqueFileName}.${fileExtension}`,
+                    decode(imageBuffer),
+                    {
+                        contentType: `image/${fileExtension}` // Set content type dynamically based on file extension
                     }
-                })
+                );
 
+                if (error)
+                    console.log("Error during File upload..: ", error);
+                if (data) {
+                    // console.log("File upload..", data);
+                    // const fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${data?.path}`; // Not this because sometimes it takes longer to fetach data.path resulting in undefines CategoryItem upload 
 
+                    fileImageUploadUrl = `https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/${uniqueFileName}.${fileExtension}`;
+                    // console.log(fileImageUploadUrl);
+                }
             }
+
+            const { data, error } = await supabase
+                .from("CategoryItem")
+                .insert([
+                    {
+                        item_name: itemName,
+                        price: itemPrice,
+                        note: itemNote,
+                        image: fileImageUploadUrl,
+                        category_id: categoryId,
+                        url: itemUrl,
+                    }
+                ])
+                .select();
+
+            console.log("data saved is ", data);
+            setLoader(false);
+            ToastAndroid.show("Category Item Created!", ToastAndroid.SHORT);
+            router.replace({
+                pathname: "/CategoryDetails",
+                params: {
+                    categoryId: categoryId
+                }
+            });
         } catch (error) {
-            console.log("Somthing unexpected went wrong.. ", error);
+            console.log("Something unexpected went wrong.. ", error);
         }
-
-
-    }
-
+    };
 
     return (
         <KeyboardAvoidingView>

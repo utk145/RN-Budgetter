@@ -33,13 +33,16 @@ export default function CategoryItemList({ categoryData }) {
             categoryData?.CategoryItem?.map((item, index) => (
               <>
                 <View key={`${item.item_name}_${index}`} style={styles.mainItemContainer}>
-
-                  <Image
-                    source={{
-                      uri: item?.image ? item.image : 'https://t3.ftcdn.net/jpg/04/60/01/36/240_F_460013622_6xF8uN6ubMvLx0tAJECBHfKPoNOR5cRa.jpg'
-                    }}
-                    style={styles.image}
-                  />
+                  {item?.image ?
+                    <Image
+                      source={{
+                        uri: item?.image
+                      }}
+                      style={styles.image}
+                    />
+                    :
+                    <Image src='https://gtzlvlopqwdjxlfzgkrn.supabase.co/storage/v1/object/public/images/ww.jpg' style={styles.image} />
+                  }
 
                   <View style={styles.detailsContainer}>
                     <Text style={styles.itemNameText}>{item?.item_name}</Text>

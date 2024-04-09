@@ -12,3 +12,18 @@
 - [Supabse backend](https://supabase.com/docs/reference/javascript/initializing) 
 
 - Expo ImagePicker: https://docs.expo.dev/versions/latest/sdk/imagepicker/
+
+- Good commit practices :-
+
+```
+    feat -> feature
+    fix -> bug fix
+    docs -> documentation
+    style -> formatting, lint stuff
+    refactor -> code restructure without changing external behavior
+    test -> adding missing tests
+    chore -> maintenance
+    init -> initial commit
+    rearrange -> files moved, added, deleted etc
+    update -> update code (versions, library compatibility)
+```
