@@ -76,7 +76,7 @@ export default function Home() {
           <Header />
         </View>
         <View style={styles.newView}>
-          <Pie />
+          <Pie categoryList={categoryList} />
           <CategoriesList categoryList={categoryList} />
         </View>
       </ScrollView>

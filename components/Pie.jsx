@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PieChart from 'react-native-pie-chart';
 import Colors from '../utils/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function Pie() {
+export default function Pie({ categoryList }) {
 
     // Width and height of the pie chart
     const widthAndHeight = 150;
@@ -13,12 +13,55 @@ export default function Pie() {
     const [values, setValues] = useState([1]);
 
     // Color for pie chart slices
-    const sliceColor = [Colors.GRAY];
+    const [sliceColor, setSliceColor] = useState([Colors.GRAY])
+    // console.log("categoryList from Pie", categoryList, "\n\n");
+
+    // State to store the count of remaining categories
+    const [remainingCategories, setRemainingCategories] = useState(0);
+    const [totalEstimateCost, settotalEstimateCost] = useState(0);
+    useEffect(() => {
+        categoryList && updatePieChart();
+    }, [categoryList]);
+
+
+    const updatePieChart = () => {
+        let totalEstimate = 0;
+        setSliceColor([]);
+        setValues([]);
+        let otherCosts = 0;
+        let totalCategories = 0;
+        categoryList?.forEach((item, index) => {
+            if (index < 4) {
+                let totalCost = 0;
+                item?.CategoryItem?.forEach((item_) => {
+                    totalCost = totalCost + item_?.price;
+                    totalEstimate += item_?.price
+                })
+                setSliceColor(sliceColor => [...sliceColor, Colors.COLORS_LIST[index]]);
+                setValues(values => [...values, totalCost])
+            } else {
+                item?.CategoryItem?.forEach((item_) => {
+                    otherCosts = otherCosts + item_?.price;
+                    totalEstimate += item_?.price
+                })
+            }
+            totalEstimate += otherCosts;
+            settotalEstimateCost(totalEstimate)
+            totalCategories++;
+        });
+
+        // Calculate the number of remaining categories
+        const remaining = Math.max(totalCategories - 4, 0);
+        setRemainingCategories(remaining);
+
+        setSliceColor(sliceColor => [...sliceColor, Colors.COLORS_LIST[4]]);
+        setValues(values => [...values, otherCosts])
+    };
 
     return (
         <View style={styles.mainView}>
             <Text style={styles.pieText}>
-                Total Expenditure: <Text style={{ fontFamily: "Outfit-Bold" }}>0 ₹</Text>
+                Total Expenditure: <Text style={{ fontFamily: "Outfit-Bold" }}>₹ {totalEstimateCost}</Text>
             </Text>
             <View style={styles.pieContainer}>
                 <PieChart
@@ -28,10 +71,21 @@ export default function Pie() {
                     coverRadius={0.65}
                     coverFill={'#FFF'}
                 />
-                <View style={styles.usageCategoryContainer}>
-                    <MaterialCommunityIcons name="checkbox-blank-circle" size={24} color={Colors.GRAY} />
-                    <Text>NA</Text>
-                </View>
+                {categoryList?.length === 0 ?
+                    <View style={styles.usageCategoryContainer}>
+                        <MaterialCommunityIcons name="checkbox-blank-circle" size={24} color={Colors.GRAY} />
+                        <Text>NA</Text>
+                    </View>
+                    :
+                    <View>
+                        {categoryList?.map((category, index) => index <= 4 && (
+                            <View key={index} style={styles.usageCategoryContainer}>
+                                <MaterialCommunityIcons name="checkbox-blank-circle" size={24} color={Colors.COLORS_LIST[index]} />
+                                <Text>{index < 4 ? category?.name : `Others (${remainingCategories})`}</Text>
+                            </View>
+                        ))}
+                    </View>
+                }
             </View>
         </View>
     )
