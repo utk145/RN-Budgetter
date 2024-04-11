@@ -86,7 +86,7 @@ export default function CategoryItemList({ categoryData, setUpdateRecord }) {
 
                   <View style={styles.detailsContainer}>
                     <Text style={styles.itemNameText}>{item?.item_name}</Text>
-
+                    {item?.note && <Text numberOfLines={1} style={{ opacity: .6 }}>{item?.note}</Text>}
                     {item?.url &&
                       <TouchableHighlight onPress={() => handleProductClickLink(item.url)} style={styles.productBuyButton}>
                         <Text style={styles.buttontext}>Product Link</Text>

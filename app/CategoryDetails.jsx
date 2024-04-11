@@ -33,11 +33,11 @@ export default function CategoryDetails() {
     return (
         <View style={styles.mainView}>
             <FontAwesome name="arrow-circle-left" size={35} color="black"
-                onPress={() => router.back()}
+                onPress={() => router.replace("/(tabs)")}
             />
 
             <CategoryInfo categoryData={categoryData} />
-            <CategoryItemList categoryData={categoryData} setUpdateRecord={()=>getCategoryDetails()} />
+            <CategoryItemList categoryData={categoryData} setUpdateRecord={() => getCategoryDetails()} />
 
             <Link href={{
                 pathname: "/AddNewCategoryItem",
