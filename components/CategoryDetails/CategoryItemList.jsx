@@ -3,14 +3,31 @@
  * Component to display a list of items belonging to a specific category.
  * Each item includes its name, image, price, and an optional product link.
  * Allows users to click on the product link to navigate to the external product page.
+ * Users can also expand individual items to reveal a delete button for item deletion.
+ * 
+ * @param {object} categoryData - Data object containing information about the category and its items.
+ * @param {string} categoryData.CategoryItem - Array of objects representing individual items in the category.
+ * @param {string} categoryData.CategoryItem[].id - Unique identifier for the item.
+ * @param {string} categoryData.CategoryItem[].item_name - Name of the item.
+ * @param {string} categoryData.CategoryItem[].image - URL of the item's image.
+ * @param {number} categoryData.CategoryItem[].price - Price of the item.
+ * @param {string} categoryData.CategoryItem[].url - Optional URL for purchasing the item.
+ * 
+ * @returns {JSX.Element} - Rendered component displaying the list of items.
  */
-import { View, Text, StyleSheet, Image, TouchableHighlight, Linking } from 'react-native'
-import React from 'react'
+
+import { View, Text, StyleSheet, Image, TouchableHighlight, Linking, TouchableOpacity, ToastAndroid } from 'react-native'
+import React, { useState } from 'react'
 import Colors from '../../utils/colors';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { supabase } from '../../utils/supabase.config';
+
 
 export default function CategoryItemList({ categoryData }) {
 
   console.log(categoryData?.CategoryItem);
+
+  const [expandItem, setExpandItem] = useState();
 
   /**
    * Function to handle clicking on the product link.
@@ -22,6 +39,27 @@ export default function CategoryItemList({ categoryData }) {
   };
 
 
+
+  /**
+ * Function to handle clicking on the delete button for an item.
+ * Deletes the selected item from the category list.
+ * 
+ * @param {string} itemId - The unique identifier of the item to be deleted.
+ */
+  const handleItemDeleteClick = async (itemId) => {
+    try {
+      await supabase
+        .from("CategoryItem")
+        .delete()
+        .eq("id", itemId);
+
+      ToastAndroid.show("Item deleted successfully", ToastAndroid.SHORT);
+
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <View style={styles.mainView}>
       <Text style={styles.heading} >
@@ -32,7 +70,9 @@ export default function CategoryItemList({ categoryData }) {
           categoryData?.CategoryItem?.length > 0 ?
             categoryData?.CategoryItem?.map((item, index) => (
               <>
-                <View key={`${item.item_name}_${index}`} style={styles.mainItemContainer}>
+                <TouchableOpacity key={`${item.item_name}_${index}`} style={styles.mainItemContainer}
+                  onPress={() => setExpandItem(expandItem === index ? null : index)}
+                >
                   {item?.image ?
                     <Image
                       source={{
@@ -54,11 +94,15 @@ export default function CategoryItemList({ categoryData }) {
                     }
                   </View>
                   <Text style={styles.itemPriceText}>₹{item?.price}</Text>
-                </View>
-
+                </TouchableOpacity>
+                {expandItem == index &&
+                  <TouchableOpacity style={styles.actionItemContainer} onPress={() => handleItemDeleteClick(item?.id)}>
+                    <FontAwesome5 name="trash" size={24} color="#FF0000" />
+                  </TouchableOpacity>
+                }
                 {/*  This line of code conditionally renders a horizontal line separator between items in the list. The condition checks if the current index is not equal to the length of the `CategoryItem` array minus one, which means that the horizontal line should be rendered for all items except the last one.
-            */}
-                {categoryData?.CategoryItem?.length - 1 != index && <View key={index + 1} style={styles.horizontalLine}></View >}
+                */}
+                {categoryData?.CategoryItem?.length - 1 != index && <View key={`${item?.item_name}${index}`} style={styles.horizontalLine}></View >}
 
               </>
             ))
@@ -125,5 +169,9 @@ const styles = StyleSheet.create({
     borderWidth: .5,
     marginVertical: 10,
     opacity: .4
+  },
+  actionItemContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end"
   }
 })
