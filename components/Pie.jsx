@@ -25,6 +25,14 @@ export default function Pie({ categoryList }) {
 
 
     const updatePieChart = () => {
+        const filteredCategories = categoryList.filter(
+            (category) => category?.CategoryItem?.length > 0
+        );
+
+        if (filteredCategories.length === 0) {
+            return; // Do nothing if all categories are empty
+        };
+
         let totalEstimate = 0;
         setSliceColor([]);
         setValues([]);

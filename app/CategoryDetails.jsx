@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Link, useLocalSearchParams } from 'expo-router'
 import { supabase } from '../utils/supabase.config';
@@ -32,13 +32,14 @@ export default function CategoryDetails() {
 
     return (
         <View style={styles.mainView}>
-            <FontAwesome name="arrow-circle-left" size={35} color="black"
-                onPress={() => router.replace("/(tabs)")}
-            />
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <FontAwesome name="arrow-circle-left" size={35} color="black"
+                    onPress={() => router.replace("/(tabs)")}
+                />
 
-            <CategoryInfo categoryData={categoryData} />
-            <CategoryItemList categoryData={categoryData} setUpdateRecord={() => getCategoryDetails()} />
-
+                <CategoryInfo categoryData={categoryData} />
+                <CategoryItemList categoryData={categoryData} setUpdateRecord={() => getCategoryDetails()} />
+            </ScrollView>
             <Link href={{
                 pathname: "/AddNewCategoryItem",
                 params: {
@@ -48,7 +49,7 @@ export default function CategoryDetails() {
                 <AntDesign name="pluscircle" size={50} color={categoryData?.color} />
             </Link>
 
-        </View>
+        </View >
     )
 }
 
