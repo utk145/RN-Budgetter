@@ -37,7 +37,7 @@ export default function CategoryDetails() {
             />
 
             <CategoryInfo categoryData={categoryData} />
-            <CategoryItemList categoryData={categoryData} />
+            <CategoryItemList categoryData={categoryData} setUpdateRecord={()=>getCategoryDetails()} />
 
             <Link href={{
                 pathname: "/AddNewCategoryItem",

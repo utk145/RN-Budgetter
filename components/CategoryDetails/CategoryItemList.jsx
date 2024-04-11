@@ -23,7 +23,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { supabase } from '../../utils/supabase.config';
 
 
-export default function CategoryItemList({ categoryData }) {
+export default function CategoryItemList({ categoryData, setUpdateRecord }) {
 
   console.log(categoryData?.CategoryItem);
 
@@ -54,7 +54,7 @@ export default function CategoryItemList({ categoryData }) {
         .eq("id", itemId);
 
       ToastAndroid.show("Item deleted successfully", ToastAndroid.SHORT);
-
+      setUpdateRecord(true);
     } catch (error) {
       throw error;
     }
