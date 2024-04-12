@@ -67,3 +67,16 @@ To install and run the Budgetter app locally, follow these steps:
 
 - **Implemented CategoryInfo component to display detailed category information along with delete category functionality and percentage bar**
   - The introduction of the CategoryInfo component enriched the app's feature set by providing users with detailed category information and the ability to delete categories. This enhancement contributed to an improved user experience by offering comprehensive category management options.
+ 
+
+<div align="center">
+
+| Snapshot | Snapshot | Snapshot | Snapshot |
+| --- | --- | --- | --- |
+| ![Screenshot_1712900931](https://github.com/utk145/RN-Budgetter/assets/122993091/503b14ee-bb1d-4ca1-a1ed-e8cffaf3d42f) | ![Screenshot_1712900942](https://github.com/utk145/RN-Budgetter/assets/122993091/94c4bf26-287b-4f65-a66f-cb81cb9ec852) | ![Screenshot_1712900936](https://github.com/utk145/RN-Budgetter/assets/122993091/734e8f82-a131-4db7-8642-7bbc1357f095) | ![Screenshot_1712900924](https://github.com/utk145/RN-Budgetter/assets/122993091/abd032eb-e84f-48dd-9e71-07b9421fa08d) |
+| ![Screenshot_1712900872](https://github.com/utk145/RN-Budgetter/assets/122993091/73522276-3c61-4f65-aa1b-7c87716941bf) | ![Screenshot_1712900928](https://github.com/utk145/RN-Budgetter/assets/122993091/51ffce52-3fb6-49f8-843a-2e42337bc17c) | ![Screenshot_1712900949](https://github.com/utk145/RN-Budgetter/assets/122993091/764f0f85-99bd-47e2-80ec-c1569e3ce36e) | |
+
+</div>
+
+
+
